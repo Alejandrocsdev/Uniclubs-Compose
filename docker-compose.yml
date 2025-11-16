@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  mysql-server-db:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Az123456
+      MYSQL_DATABASE: gamech
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  gamech-server-app:
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      MYSQL_PRO_USERNAME: root
+      MYSQL_PRO_PASSWORD: Az123456
+      MYSQL_PRO_HOST: mysql-server-db
+      MYSQL_PRO_PORT: 3306
+      MYSQL_DB: gamech
+      NODE_ENV: production
+    depends_on:
+      - mysql-server-db
+
+volumes:
+  mysql_data:
